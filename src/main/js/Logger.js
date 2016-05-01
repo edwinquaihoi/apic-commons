@@ -1,3 +1,17 @@
+/**
+ * This module is a simple wrapper over console to provide configurable log levels.You supply the module
+ * a log level at creation along with a console object. It follows the syslog standard log levels. It uses
+ * the logLevel to determine whether to emit the log statement.
+ * 
+ * 0 - emergency
+ * 1 - alert
+ * 2 - critical
+ * 3 - error
+ * 4 - warning
+ * 5 - notice
+ * 6 - info
+ * 7 - debug 
+ */
 function Logger(logLevel, console) {
 	this.logLevel = logLevel
 	this.console = console;
