@@ -1,11 +1,11 @@
 var apiOperationCreator = require("./ApiOperation.js"); 
 	
-function ApiVersion(name, version, operationMap, logLevel) {
+function ApiVersion(name, version, operationMap, logger) {
 	
 	this.name = name;
 	this.version = version;
 	this.operationMap = [];
-	this.logLevel = logLevel;
+	this.logger = logger;
 	
 	// loop through operationMap and make and index map
 	for (var i = 0; i < operationMap.length; i++) {

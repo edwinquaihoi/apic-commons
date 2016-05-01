@@ -3,13 +3,22 @@ var Require = load('src/main/js/Require.js');
 var require = Require( './' , [ currentWorkingDir + '/src/main/js/'] );
 
 describe("ApiVersionTest",function() {
+
+	// spy object to replace console
+	var console;
+
+	beforeEach(function() {
+		console = jasmine.createSpyObj('console',
+				[ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ]);
+	});
+
 	it("testApiVersion", function() {
 		
 		var config = [
 		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
 		             ];
-		var apiVersion = require("ApiVersion.js").newApiVersion("api","1.0.0", config, "info");
+		var apiVersion = require("ApiVersion.js").newApiVersion("api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
 		expect(apiVersion.version).toEqual("1.0.0");
 		expect(apiVersion.name).toEqual("api");
@@ -18,6 +27,16 @@ describe("ApiVersionTest",function() {
 		expect(apiVersion.getOperation("/users").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users");
 		expect(apiVersion.getOperation("/users/all").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users/all");
 		
-		//console.log(JSON.stringify(apiVersion));
+	});
+	
+	it("testApiLogger", function() {
+		var config = [
+		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
+		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
+		             ];
+		var apiVersion = require("ApiVersion.js").newApiVersion("api","1.0.0", config, require('Logger.js').newLogger(6, console));
+
+		apiVersion.logger.info("Hello");
+		expect(console.info).toHaveBeenCalledWith("Hello");
 	});
 });
