@@ -5,6 +5,7 @@
   <formats>
     <format>zip</format>
   </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
       <directory>${basedir}/src/main/js</directory>
@@ -14,7 +15,7 @@
       <excludes>
       	<exclude>Require.js</exclude>
       </excludes>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>.</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${basedir}/src/main/script</directory>
@@ -22,7 +23,7 @@
         <include>*.sh</include>
         <include>*.cmd</include>
       </includes>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>.</outputDirectory>
     </fileSet>
   </fileSets>
   <files>
