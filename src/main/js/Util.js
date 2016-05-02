@@ -21,3 +21,14 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 	
 	return catalogConfig.getApiConfig(frameworkLocation, console);				
 };
+
+exports.getApiConfig = function(frameworkLocation, console, name, version, config, logLevel) {
+
+	var logCreator = require(frameworkLocation + 'Logger.js');	
+	var logger = logCreator.newLogger(logLevel,console);	
+	
+	var apiVersionCreator = require(frameworkLocation + 'ApiVersion.js');
+	var apiVersion = apiVersionCreator.newApiVersion(name, version, config, logger);
+		
+	return apiVersion;
+}
