@@ -73,7 +73,8 @@
 		</plugins>
 	</build>
 	<scm>
-		<url>https://github.com/edwinquaihoi/apic-commons.git</url>
-		<connection>https://github.com/edwinquaihoi/apic-commons.git</connection>
+		<url>scm:git:https://github.com/edwinquaihoi/apic-commons.git</url>
+		<connection>scm:git:https://github.com/edwinquaihoi/apic-commons.git</connection>
+		<developerConnection>scm:git:https://github.com/edwinquaihoi/apic-commons.git</developerConnection>
 	</scm>
 </project>
