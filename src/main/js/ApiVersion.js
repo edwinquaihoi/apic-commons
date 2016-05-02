@@ -22,6 +22,6 @@ ApiVersion.prototype.getOperationMap = function(name) {
 	return this.operationMap;
 }
 
-exports.newApiVersion = function(name, version, operationMap, logLevel) {
-	return new ApiVersion(name, version, operationMap, logLevel);
+exports.newApiVersion = function(name, version, operationMap, logger) {
+	return new ApiVersion(name, version, operationMap, logger);
 }
