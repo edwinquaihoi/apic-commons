@@ -31,5 +31,9 @@
       <source>src/main/script/install.sh</source>
       <filtered>true</filtered>
     </file>
+    <file>
+      <source>src/main/dcm/dcm-upload-definition.xml</source>
+      <filtered>true</filtered>
+    </file>
   </files>
 </assembly>
