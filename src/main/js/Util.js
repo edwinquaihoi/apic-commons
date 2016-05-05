@@ -2,7 +2,7 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 
 	// get the catalog configuration
 	
-	var configModuleLocation = configLocation + catalog + name + 'Config';
+	var configModuleLocation = configLocation + name + catalog + 'Config';
 	if(version != '') {
 		configModuleLocation = configModuleLocation + '-' + version + '.js';
 	} else {
