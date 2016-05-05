@@ -16,6 +16,7 @@
       	<exclude>Require.js</exclude>
       </excludes>
       <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <directory>${basedir}/src/main/script</directory>
@@ -24,16 +25,15 @@
         <include>*.cmd</include>
       </includes>
       <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/src/main/dcm</directory>
+      <includes>
+        <include>*.xml</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
     </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>src/main/script/install.sh</source>
-      <filtered>true</filtered>
-    </file>
-    <file>
-      <source>src/main/dcm/dcm-upload-definition.xml</source>
-      <filtered>true</filtered>
-    </file>
-  </files>
 </assembly>
