@@ -1,5 +1,5 @@
 	
-function ApiVersion(frameworkLocation, name, version, operationMap, logger) {
+function Api(frameworkLocation, name, version, operationMap, logger) {
 	
 	this.name = name;
 	this.version = version;
@@ -15,14 +15,14 @@ function ApiVersion(frameworkLocation, name, version, operationMap, logger) {
 	}
 }	
 
-ApiVersion.prototype.getOperation = function(name) {
+Api.prototype.getOperation = function(name) {
 	return this.operationMap[name];
 }
 
-ApiVersion.prototype.getOperationMap = function(name) {
+Api.prototype.getOperationMap = function(name) {
 	return this.operationMap;
 }
 
-exports.newApiVersion = function(frameworkLocation,name, version, operationMap, logger) {
-	return new ApiVersion(frameworkLocation,name, version, operationMap, logger);
+exports.newApi= function(frameworkLocation,name, version, operationMap, logger) {
+	return new Api(frameworkLocation,name, version, operationMap, logger);
 }

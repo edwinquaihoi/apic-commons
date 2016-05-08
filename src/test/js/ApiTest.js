@@ -3,7 +3,7 @@ var frameworkLocation = currentWorkingDir + '/src/main/js/';
 var Require = load('src/main/js/lib/Require.js');
 var require = Require( './' , [ frameworkLocation ] );
 
-describe("ApiVersionTest",function() {
+describe("ApiTest",function() {
 
 	// spy object to replace console
 	var console;
@@ -13,20 +13,20 @@ describe("ApiVersionTest",function() {
 				[ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ]);
 	});
 
-	it("testApiVersion", function() {
+	it("testApi", function() {
 		
 		var config = [
 		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
 		             ];
-		var apiVersion = require("ApiVersion.js").newApiVersion(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
-		expect(apiVersion.version).toEqual("1.0.0");
-		expect(apiVersion.name).toEqual("api");
-		expect(apiVersion.getOperation("/users").name).toEqual("/users");
-		expect(apiVersion.getOperation("/users/all").name).toEqual("/users/all");
-		expect(apiVersion.getOperation("/users").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users");
-		expect(apiVersion.getOperation("/users/all").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users/all");
+		expect(api.version).toEqual("1.0.0");
+		expect(api.name).toEqual("api");
+		expect(api.getOperation("/users").name).toEqual("/users");
+		expect(api.getOperation("/users/all").name).toEqual("/users/all");
+		expect(api.getOperation("/users").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users");
+		expect(api.getOperation("/users/all").getMethod("GET").targetUrl).toEqual("https://randomuser.me/api/users/all");
 		
 	});
 	
@@ -35,9 +35,9 @@ describe("ApiVersionTest",function() {
 		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
 		             ];
-		var apiVersion = require("ApiVersion.js").newApiVersion(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(6, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(6, console));
 
-		apiVersion.logger.info("Hello");
+		api.logger.info("Hello");
 		expect(console.info).toHaveBeenCalledWith("Hello");
 	});
 });
