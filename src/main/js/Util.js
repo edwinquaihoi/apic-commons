@@ -28,7 +28,7 @@ exports.getApiConfig = function(frameworkLocation, console, name, version, confi
 	var logger = logCreator.newLogger(logLevel,console);	
 	
 	var apiVersionCreator = require(frameworkLocation + 'ApiVersion.js');
-	var apiVersion = apiVersionCreator.newApiVersion(name, version, config, logger);
+	var apiVersion = apiVersionCreator.newApiVersion(frameworkLocation, name, version, config, logger);
 		
 	return apiVersion;
 }

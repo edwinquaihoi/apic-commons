@@ -1,6 +1,7 @@
 var currentWorkingDir = java.lang.System.getProperty("user.dir");
+var frameworkLocation = currentWorkingDir + '/src/main/js/';
 var Require = load('src/main/js/Require.js');
-var require = Require( './' , [ currentWorkingDir + '/src/main/js/'] );
+var require = Require( './' , [ frameworkLocation ] );
 
 describe("ApiVersionTest",function() {
 
@@ -18,7 +19,7 @@ describe("ApiVersionTest",function() {
 		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
 		             ];
-		var apiVersion = require("ApiVersion.js").newApiVersion("api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var apiVersion = require("ApiVersion.js").newApiVersion(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
 		expect(apiVersion.version).toEqual("1.0.0");
 		expect(apiVersion.name).toEqual("api");
@@ -34,7 +35,7 @@ describe("ApiVersionTest",function() {
 		              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 		              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
 		             ];
-		var apiVersion = require("ApiVersion.js").newApiVersion("api","1.0.0", config, require('Logger.js').newLogger(6, console));
+		var apiVersion = require("ApiVersion.js").newApiVersion(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(6, console));
 
 		apiVersion.logger.info("Hello");
 		expect(console.info).toHaveBeenCalledWith("Hello");
