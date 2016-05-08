@@ -3,7 +3,7 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 	// get the catalog configuration
 	
 	var configModuleLocation = configLocation + name + catalog + 'Config';
-	if(version != '') {
+	if(version !== '') {
 		configModuleLocation = configModuleLocation + '-' + version + '.js';
 	} else {
 		configModuleLocation = configModuleLocation + '.js';
@@ -31,4 +31,4 @@ exports.getApiConfig = function(frameworkLocation, console, name, version, confi
 	var apiVersion = apiVersionCreator.newApiVersion(frameworkLocation, name, version, config, logger);
 		
 	return apiVersion;
-}
+};

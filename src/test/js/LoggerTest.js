@@ -1,5 +1,5 @@
 var currentWorkingDir = java.lang.System.getProperty("user.dir");
-var Require = load('src/main/js/Require.js');
+var Require = load('src/main/js/lib/Require.js');
 var require = Require('./', [ currentWorkingDir + '/src/main/js/' ]);
 
 describe("LoggerTest", function() {
