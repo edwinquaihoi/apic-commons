@@ -6,6 +6,11 @@
 	<version>0.0.8-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
+	<properties>
+		<api.base.dir>local:///ondisk/js/api</api.base.dir>		
+		<api.framework.dir>${api.base.dir}/fw</api.framework.dir>		
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>de.helwich.junit</groupId>
