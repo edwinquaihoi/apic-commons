@@ -1,4 +1,8 @@
-	
+/**
+ * This module represents an operation in a APIc API.
+ * @param frameworkLocation the folder from which to load framework modules. This parameter allows module loading to work the same during test.
+ * @param apiVersion a reference to an Api object that the operation belongs to 
+ */
 function ApiOperation(frameworkLocation, apiVersion, name, methodMap) {
 	
 	this.apiVersion = apiVersion;

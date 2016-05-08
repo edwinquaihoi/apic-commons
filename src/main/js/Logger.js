@@ -66,6 +66,9 @@ Logger.prototype.emergency = function(msg) {
 	}
 }
 
+/**
+ * Integrates into require.js module system.
+ */
 exports.newLogger = function(logLevel, console) {
 	return new Logger(logLevel, console);
 }
