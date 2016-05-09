@@ -8,7 +8,7 @@ import de.helwich.junit.JasmineTestRunner;
 @RunWith(JasmineTestRunner.class)
 @JasmineTest(
     src =  { "lib/Require" },
-    test = { "ApiMethodTest", "ApiOperationTest", "ApiTest", "LoggerTest"},
+    test = { "ApiMethodTest", "ApiOperationTest", "ApiTest", "LoggerTest", "UtilTest"},
     browser = false
 )
 public class ApicCommonsMainTest {
