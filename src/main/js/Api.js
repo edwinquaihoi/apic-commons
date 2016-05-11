@@ -39,6 +39,36 @@ Api.prototype.getOperationMap = function() {
 	return this.operationMap;
 }
 
+Api.prototype.logHeaders = function(apim) {
+	
+	// get the message headers
+	try {
+		var headerz = apim.getvariable('message.headers');
+		var headerLogPayload = {headers:headerz};
+		this.logger.notice(JSON.stringify(headerLogPayload));
+	} catch(e) {
+		this.logger.error(e);
+		throw e;
+	}
+}
+
+Api.prototype.logBody = function(apim) {
+	
+	// get the message headers
+	try {
+		var bodi = apim.getvariable('message.body');
+		var bodyPayload = {body:bodi};
+		this.logger.debug(JSON.stringify(bodyPayload));
+	} catch(e) {
+		this.logger.error(e);
+		throw e;
+	}
+}
+
+Api.prototype.logPayload = function(apim) {
+	return this.operationMap;
+}
+
 /**
  * Integrates into require.js module system.
  */
