@@ -46,7 +46,7 @@ describe("JsonTransformerTest", function() {
 			};
 
 			var result = jsonTransformer.transform(data, template);
-			var expectedResults = '{"foo":[{"bar":"A"},{"bar":"B"}]}};
+			var expectedResults = '{"foo":[{"bar":"A"},{"bar":"B"}]}';
 			var actualResults = JSON.stringify(result);
 			
 			expect(expectedResults).toBe(actualResults);
