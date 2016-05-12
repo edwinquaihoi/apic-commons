@@ -12,9 +12,6 @@
       <includes>
         <include>*.js</include>
       </includes>
-      <excludes>
-      	<exclude>Require.js</exclude>
-      </excludes>
       <outputDirectory>.</outputDirectory>
       <filtered>true</filtered>
     </fileSet>
