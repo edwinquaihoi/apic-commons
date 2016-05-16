@@ -12,12 +12,7 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 
 	// get the catalog configuration
 	
-	var configModuleLocation = configLocation + name + catalog + 'Config';
-	if(version !== '') {
-		configModuleLocation = configModuleLocation + '-' + version + '.js';
-	} else {
-		configModuleLocation = configModuleLocation + '.js';
-	}
+	var configModuleLocation = configLocation + name + catalog + 'Config.js';
 	
 	console.debug("configModuleLocation="+configModuleLocation);
 	
