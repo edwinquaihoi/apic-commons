@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.anz</groupId>
 	<artifactId>apic-commons</artifactId>
-	<version>0.0.11</version>
+	<version>0.0.12-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -120,7 +120,7 @@
 		<url>scm:git:https://github.com/edwinquaihoi/apic-commons.git</url>
 		<connection>scm:git:https://github.com/edwinquaihoi/apic-commons.git</connection>
 		<developerConnection>scm:git:https://github.com/edwinquaihoi/apic-commons.git</developerConnection>
-		<tag>apic-commons-0.0.11</tag>
+		<tag>apic-commons-0.0.3</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
