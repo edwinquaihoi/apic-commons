@@ -7,7 +7,7 @@
 
 	<properties>
 		<api.base.dir>local:///ondisk/js/api</api.base.dir>		
-		<api.framework.dir>${api.base.dir}/fw</api.framework.dir>		
+		<api.framework.dir>${api.base.dir}/fw/${project.version}</api.framework.dir>		
 	</properties>
 
 	<dependencies>
