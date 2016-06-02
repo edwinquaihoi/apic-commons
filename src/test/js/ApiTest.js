@@ -49,7 +49,7 @@ describe("ApiTest",function() {
 	});
 	
 	it("testLogHeaders", function() {
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(5, console));
 		
 		// mock object to simulate apim global variable
 		var headerz = {header1:'header1',header2:'header2'}; 

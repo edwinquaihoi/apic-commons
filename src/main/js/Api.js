@@ -44,8 +44,14 @@ Api.prototype.logHeaders = function(apim) {
 	// get the message headers
 	try {
 		var headerz = apim.getvariable('message.headers');
-		var headerLogPayload = {headers:headerz};
-		this.logger.notice(JSON.stringify(headerLogPayload));
+		var logPayload = {headers:headerz};
+		if(this.logger.isDebug()) {
+			var bodi = apim.getvariable('message.body');
+			logPayload.body = bodi;
+			this.logger.debug(JSON.stringify(logPayload));
+		} else {
+			this.logger.notice(JSON.stringify(logPayload));
+		}
 	} catch(e) {
 		this.logger.error(e);
 		throw e;

@@ -18,6 +18,12 @@ function Logger(logLevel, console) {
 	this.logPattern = "";
 }
 
+Logger.prototype.isDebug = function() {
+	if(this.logLevel > 6) {
+		return true;
+	}
+}
+
 Logger.prototype.debug = function(msg) {
 	if(this.logLevel > 6) {
 		this.console.debug(msg);
@@ -62,7 +68,7 @@ Logger.prototype.alert = function(msg) {
 
 Logger.prototype.emergency = function(msg) {
 	if(this.logLevel == 0) {
-		this.console.emergency(msg);alert
+		this.console.emergency(msg);
 	}
 }
 
