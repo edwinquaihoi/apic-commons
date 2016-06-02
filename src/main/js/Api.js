@@ -43,15 +43,18 @@ Api.prototype.logHeaders = function(apim) {
 	
 	// get the message headers
 	try {
-		var headerz = apim.getvariable('message.headers');
-		var logPayload = {headers:headerz};
-		if(this.logger.isDebug()) {
-			var bodi = apim.getvariable('message.body');
-			logPayload.body = bodi;
-			this.logger.debug(JSON.stringify(logPayload));
-		} else {
-			this.logger.notice(JSON.stringify(logPayload));
-		}
+		var log = {};
+		var audit = {};
+		audit.orgname = apim.getvariable('api.org.name');
+		audit.api = apim.getvariable('api.name');
+		audit.apiversion = apim.getvariable('api.version');
+		audit.requesturi = apim.getvariable('request.uri');
+		audit.clientappname = apim.getvariable('client.app.name');
+		audit.clientid = apim.getvariable('client.app.id');
+		audit.datetime = apim.getvariable('system.datetime');
+		log.audit = audit;
+		log.headers = apim.getvariable('message.headers').headers;
+		this.logger.notice(JSON.stringify(log));
 	} catch(e) {
 		this.logger.error(e);
 		throw e;
@@ -63,7 +66,8 @@ Api.prototype.logBody = function(apim) {
 	// get the message headers
 	try {
 		var bodi = apim.getvariable('message.body');
-		var bodyPayload = {body:bodi};
+		var headers = apim.getvariable('message.headers').headers;
+		var bodyPayload = {headers:headers,  body:bodi};
 		this.logger.debug(JSON.stringify(bodyPayload));
 	} catch(e) {
 		this.logger.error(e);
