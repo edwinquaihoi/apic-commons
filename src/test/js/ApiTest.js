@@ -54,13 +54,16 @@ describe("ApiTest",function() {
 		// mock object to simulate apim global variable
 		var headerz = {header1:'header1',header2:'header2'}; 
 		var headers = {headers:headerz};
-		
 		apim.getvariable.and.callFake(function(variable) {			
-			return headerz;
+			if(variable =='message.headers') { 				
+				return headers;
+			}
+			return null;
 		});
+		var expected = {"audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":{"header1":"header1","header2":"header2"}};
 		
 		api.logHeaders(apim);
-		expect(console.notice).toHaveBeenCalledWith(JSON.stringify(headers));
+		expect(console.notice).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.headers');
 	});
 
