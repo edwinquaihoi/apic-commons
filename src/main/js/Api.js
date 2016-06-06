@@ -70,8 +70,8 @@ Api.prototype.logMessageBody = function(apim, loggingTerminal) {
 Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
 
 	try {
-		var headers = apim.getvariable('message.headers').headers;
-		var bodyPayload = {headers:headers,  body:bodi, loggingTerminal:loggingTerminal};
+		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
+		var bodyPayload = {"x-global-transaction-id":transactionid,  body:bodi, loggingTerminal:loggingTerminal};
 		this.logger.debug(JSON.stringify(bodyPayload));
 	} catch(e) {
 		this.logger.error(e);

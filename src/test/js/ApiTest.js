@@ -77,12 +77,12 @@ describe("ApiTest",function() {
 		apim.getvariable.and.callFake(function(variable) {			
 			if(variable == 'message.body') {
 				return bodi;
-			} else if(variable == 'message.headers') {
-				return {headers:null};
+			} else if(variable == 'message.headers.x-global-transaction-id') {
+				return "56955";
 			}
 			return null;
 		});
-		var expected = {headers:null,  body:bodi, loggingTerminal:"Response"};
+		var expected = {"x-global-transaction-id":"56955",  body:bodi, loggingTerminal:"Response"};
 		
 		api.logMessageBody(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));
