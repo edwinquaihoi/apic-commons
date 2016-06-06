@@ -48,7 +48,7 @@ describe("ApiTest",function() {
 		expect(console.info).toHaveBeenCalledWith("Hello");
 	});
 	
-	it("testLogHeaders", function() {
+	it("testLogAuditData", function() {
 		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
 		// mock object to simulate apim global variable
@@ -60,26 +60,32 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":{"header1":"header1","header2":"header2"}};
+		var expected = {"audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":headerz};
 		
-		api.logHeaders(apim);
+		api.logAuditData(apim);
 		expect(console.notice).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.headers');
 	});
 
-	it("testLogBody", function() {
+	it("testLogMessageBody", function() {
 		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
 		// mock object to simulate apim global variable
 		var bodi = {body1:'body1',body2:'body2'}; 
-		var body = {body:bodi};
+		var body = {body:bodi};		
 		
 		apim.getvariable.and.callFake(function(variable) {			
-			return bodi;
+			if(variable == 'message.body') {
+				return bodi;
+			} else if(variable == 'message.headers') {
+				return {headers:null};
+			}
+			return null;
 		});
+		var expected = {headers:null,  body:bodi, loggingTerminal:"Response"};
 		
-		api.logBody(apim);
-		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(body));
+		api.logMessageBody(apim, 'Response');
+		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.body');
 	});
 });

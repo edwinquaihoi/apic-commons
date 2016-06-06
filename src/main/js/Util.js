@@ -41,3 +41,15 @@ exports.getApiConfig = function(frameworkLocation, console, name, version, confi
 
 	return api;
 };
+
+
+exports.transformAndLog = function(transformer, transformMethodName, frameworkLocation, apiConfig, apim) {
+	var transformMethod = transformer[transformMethodName];
+	var output = null;
+	if (transformer != null && transformMethod != null && typeof transformMethod === "function") {
+	    var output = transformMethod(frameworkLocation, apiConfig, apim);	
+	    apiConfig.logOutputBody(apim, output, transformMethodName);
+	    apim.setvariable('message.body', output);
+	}
+}
+

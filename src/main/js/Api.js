@@ -39,7 +39,7 @@ Api.prototype.getOperationMap = function() {
 	return this.operationMap;
 }
 
-Api.prototype.logHeaders = function(apim) {
+Api.prototype.logAuditData = function(apim) {
 	
 	// get the message headers
 	try {
@@ -61,13 +61,17 @@ Api.prototype.logHeaders = function(apim) {
 	}
 }
 
-Api.prototype.logBody = function(apim) {
+Api.prototype.logMessageBody = function(apim, loggingTerminal) {
 	
-	// get the message headers
+    var bodi = apim.getvariable('message.body');
+    this.logOutputBody(apim, bodi, loggingTerminal)
+}
+
+Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
+
 	try {
-		var bodi = apim.getvariable('message.body');
 		var headers = apim.getvariable('message.headers').headers;
-		var bodyPayload = {headers:headers,  body:bodi};
+		var bodyPayload = {headers:headers,  body:bodi, loggingTerminal:loggingTerminal};
 		this.logger.debug(JSON.stringify(bodyPayload));
 	} catch(e) {
 		this.logger.error(e);
@@ -75,9 +79,11 @@ Api.prototype.logBody = function(apim) {
 	}
 }
 
+
 Api.prototype.logPayload = function(apim) {
 	return this.operationMap;
 }
+
 
 /**
  * Integrates into require.js module system.
