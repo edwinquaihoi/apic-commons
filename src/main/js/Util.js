@@ -14,7 +14,7 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 	
 	var configModuleLocation = configLocation + catalog + 'Config.js';
 	
-	//console.debug("configModuleLocation="+configModuleLocation);
+	console.debug("configModuleLocation="+configModuleLocation);
 	
 	var catalogConfig;
 	try {
@@ -32,12 +32,12 @@ exports.getApiConfig = function(frameworkLocation, console, name, version, confi
 	var logCreator = require(frameworkLocation + 'Logger.js');	
 	var logger = logCreator.newLogger(logLevel,console);	
 
-	//console.debug('Logger:'+logger);
+	console.debug('Logger:'+logger);
 	
 	var apiCreator = require(frameworkLocation + 'Api.js');
 	var api = apiCreator.newApi(frameworkLocation, name, version, config, logger);
 		
-	//console.debug('Api:' + api);
+	console.debug('Api:' + api);
 
 	return api;
 };
