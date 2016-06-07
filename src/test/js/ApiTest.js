@@ -82,7 +82,7 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"x-global-transaction-id":"56955",  body:bodi, loggingTerminal:"Response"};
+		var expected = {"x-global-transaction-id":"56955",  loggingTerminal:"Response", body:bodi };
 		
 		api.logMessageBody(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));

@@ -81,6 +81,10 @@ Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
 	}
 }
 
+/**
+ * Masks the given string based on regular expressions
+ * @param str String to be masked
+ */
 Api.prototype.mask = function(str) {
 	var maskedStr = str;
 	
@@ -90,6 +94,42 @@ Api.prototype.mask = function(str) {
 	maskedStr = maskedStr.replace(/(?:"(refNum|referenceNumber)"\s*:\s*")\b(\d{4})\d+(\d{4})\b/ig, '"$1": $2xxxxxxxx$3');
 	
 	return maskedStr;
+}
+
+
+/**
+ * Returns required object from array based on specified property
+ * @param arr Array
+ * @param property name of the property
+ * @param value of the property to match
+ * @return found object from the array
+ */
+Api.prototype.getByValue = function(arr, property, value) {
+	  var result  = arr.filter(function(o){return o[property] == value;} );
+	  return result!= null? result[0] : null; // or undefined
+}
+
+/**
+ * Map the business error to specific HTTP error and status code 
+ * @param provider provider name
+ * @param code error code from provider
+ * @return HTTP Status Code object
+ */
+Api.prototype.getErrorCode = function(frameworkLocation, providerInput, codeInput) {
+	var statusCodeAccessor = require(frameworkLocation + "StatusCode.js"); 
+	var provider = statusCodeAccessor!= null ? this.getByValue(statusCodeAccessor.maps, 'provider', providerInput) : null;
+	var code = provider != null? this.getByValue(provider.codes, 'code', codeInput) : null;
+	var statusCode = code != null ? this.getByValue(statusCodeAccessor.statusCodes, 'statusCode', code.statusCode) : null;
+	if(statusCodeAccessor != null && statusCode == null) {
+		statusCode = this.getByValue(statusCodeAccessor.statusCodes, 'statusCode', 'Unknown');
+	}
+	return statusCode;
+}
+
+Api.prototype.generateBusinessError = function(frameworkLocation, apim, provider, code) {
+	var statusCode = this.getErrorCode(frameworkLocation, provider, code);
+	apim.setvariable('message.status.code', statusCode.httpCode);
+	return statusCode;
 }
 
 
