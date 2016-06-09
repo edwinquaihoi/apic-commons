@@ -26,6 +26,7 @@ describe("ApiTest",function() {
 		console.info.and.callFake(log);
 		console.notice.and.callFake(log);
 		console.debug.and.callFake(log);
+		console.error.and.callFake(log);
 	});
 
 	it("testApi", function() {
@@ -44,8 +45,8 @@ describe("ApiTest",function() {
 	it("testApiLogger", function() {
 		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 
-		api.logger.info("Hello");
-		expect(console.info).toHaveBeenCalledWith("Hello");
+		api.logger.error("Hello");
+		expect(console.error).toHaveBeenCalledWith("Hello");
 	});
 	
 	it("testLogAuditData", function() {
@@ -87,5 +88,27 @@ describe("ApiTest",function() {
 		api.logMessageBody(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.body');
+	});
+	
+	it("testLogException", function() {
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		
+		apim.getvariable.and.callFake(function(variable) {			
+			if(variable == 'message.headers.x-global-transaction-id') {
+				return "56955";
+			}
+			return null;
+		});	
+		var e1 = null;
+		try {
+			var myTry = new ExceptinoCreatorFakeClass();
+		}catch(e) {
+			e1 = e.toString();
+			api.logException(apim, e, 'Response');
+		}
+		
+		//{"x-global-transaction-id":"56955","loggingTerminal":"Response","exception":"ReferenceError: \"ExceptinoCreatorFakeClass\" is not defined"}
+		var expected = {"x-global-transaction-id":"56955",  loggingTerminal:"Response", exception:e1 };
+		expect(console.error).toHaveBeenCalledWith(JSON.stringify(expected));
 	});
 });

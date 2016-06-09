@@ -12,6 +12,8 @@ function Api(frameworkLocation, name, version, operationMap, logger) {
 	this.version = version;
 	this.operationMap = [];
 	this.logger = logger;
+	this.statusCodesMap = [];
+	this.providersMap = [];
 	
 	var apiOperationCreator = require(frameworkLocation + "ApiOperation.js"); 
 
@@ -19,6 +21,25 @@ function Api(frameworkLocation, name, version, operationMap, logger) {
 	for (var i = 0; i < operationMap.length; i++) {
 		var op = apiOperationCreator.newApiOperation(frameworkLocation,this, operationMap[i].name, operationMap[i].methods);
 		this.operationMap[operationMap[i].name] = op;
+	}
+	
+	// loop through statusCodesArray and make and index map
+	var statusCodeAccessor = require(frameworkLocation + "StatusCode.js"); 
+	for (var i = 0; i < statusCodeAccessor.statusCodes.length; i++) {
+		var statusCodeObj = statusCodeAccessor.statusCodes[i];
+		this.statusCodesMap[statusCodeObj.statusCode] = statusCodeObj;
+	}	
+	// loop through providersArray and make and index map
+	for (var i = 0; i < statusCodeAccessor.maps.length; i++) {
+		var providerObj = statusCodeAccessor.maps[i];
+		providerObj.errorCodesMap = [];
+		if(providerObj.codes != null) {
+			for (var j = 0; j < providerObj.codes.length; j++) {
+				var errorCodeObj = providerObj.codes[j];
+				providerObj.errorCodesMap[errorCodeObj.code] = errorCodeObj;			
+			}
+		}			
+		this.providersMap[providerObj.provider] = providerObj;
 	}
 }	
 
@@ -39,6 +60,25 @@ Api.prototype.getOperationMap = function() {
 	return this.operationMap;
 }
 
+/**
+ * Gets an statusCode by status code name.
+ * @param name the name of the statusCode.
+ * @returns a statusCode
+ */
+Api.prototype.getStatusCodeObject = function(name) {
+	return this.statusCodesMap[name];
+}
+
+/**
+ * Gets an errorCodeObject by provider and error code.
+ * @returns error code mapping object with error code name and status code name.
+ */
+Api.prototype.getErrorCodeObject = function(providerInput, codeInput) {
+	var provider = this.providersMap[providerInput];
+	var code = provider != null? provider.errorCodesMap[codeInput] : null;
+	return code;
+}
+
 Api.prototype.logAuditData = function(apim) {
 	
 	// get the message headers
@@ -57,7 +97,6 @@ Api.prototype.logAuditData = function(apim) {
 		this.logger.notice(JSON.stringify(log));
 	} catch(e) {
 		this.logger.error(e);
-		throw e;
 	}
 }
 
@@ -65,6 +104,18 @@ Api.prototype.logMessageBody = function(apim, loggingTerminal) {
 	
     var bodi = apim.getvariable('message.body');
     this.logOutputBody(apim, bodi, loggingTerminal)
+}
+
+Api.prototype.logException = function(apim, e, loggingTerminal) {
+	try {
+		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
+		var exception = {"x-global-transaction-id":transactionid, loggingTerminal:loggingTerminal, exception:e.toString()};
+		var str = JSON.stringify(exception);
+		var str = this.mask(str);
+		this.logger.error(str);
+	} catch(ex) {
+		this.logger.error(ex);
+	}
 }
 
 Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
@@ -77,7 +128,6 @@ Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
 		this.logger.debug(str);
 	} catch(e) {
 		this.logger.error(e);
-		throw e;
 	}
 }
 
@@ -116,12 +166,10 @@ Api.prototype.getByValue = function(arr, property, value) {
  * @return HTTP Status Code object
  */
 Api.prototype.getErrorCode = function(frameworkLocation, providerInput, codeInput) {
-	var statusCodeAccessor = require(frameworkLocation + "StatusCode.js"); 
-	var provider = statusCodeAccessor!= null ? this.getByValue(statusCodeAccessor.maps, 'provider', providerInput) : null;
-	var code = provider != null? this.getByValue(provider.codes, 'code', codeInput) : null;
-	var statusCode = code != null ? this.getByValue(statusCodeAccessor.statusCodes, 'statusCode', code.statusCode) : null;
-	if(statusCodeAccessor != null && statusCode == null) {
-		statusCode = this.getByValue(statusCodeAccessor.statusCodes, 'statusCode', 'Unknown');
+	var code = this.getErrorCodeObject(providerInput, codeInput);
+	var statusCode = code != null ? this.getStatusCodeObject(code.statusCode) : null;
+	if(statusCode == null) {
+		statusCode = this.getStatusCodeObject('Unknown');
 	}
 	return statusCode;
 }
