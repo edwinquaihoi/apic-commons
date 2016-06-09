@@ -43,6 +43,10 @@ function Api(frameworkLocation, name, version, operationMap, logger) {
 	}
 }	
 
+Api.prototype.setTransformer = function(transformer) {
+	this.transformer = transformer;
+}
+
 /**
  * Gets an ApiOperation by name.
  * @param name the name of the ApiOperation.
@@ -137,14 +141,10 @@ Api.prototype.logOutputMessage = function(apim, bodi, logPointId) {
  * @param str String to be masked
  */
 Api.prototype.mask = function(str) {
-	var maskedStr = str;
-	
-	// Mask credit card account number
-	maskedStr = maskedStr.replace(/\b(\d{12})(\d{4})\b/ig, 'xxxxxxxxxxxx$2');	
-	// Mask reference number
-	maskedStr = maskedStr.replace(/(?:"(refNum|referenceNumber)"\s*:\s*")\b(\d{4})\d+(\d{4})\b/ig, '"$1": "$2xxxxxxxx$3');
-	
-	return maskedStr;
+	// You can write your common masks on str here before application specific masking is done.
+
+	// Execute application specific masks
+	return this.transformer != null && this.transformer.mask != null && typeof this.transformer.mask === "function"? this.transformer.mask(str) : str;	
 }
 
 

@@ -1,7 +1,8 @@
 var currentWorkingDir = java.lang.System.getProperty("user.dir");
 var frameworkLocation = currentWorkingDir + '/src/main/js/';
+var configLocation = currentWorkingDir + '/src/test/js/';
 var Require = load('src/main/js/lib/Require.js');
-var require = Require( './' , [ frameworkLocation ] );
+var require = Require( './' , [ frameworkLocation, configLocation ] );
 
 describe("ApiTest",function() {
 
@@ -72,10 +73,12 @@ describe("ApiTest",function() {
 
 	it("testLogPayload", function() {
 		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		//api.setTransformer(require(configLocation + 'Transformations.js'));
 		
 		// mock object to simulate apim global variable
-		var bodi = {body1:'body1',body2:'body2'}; 
+		var bodi = {"referenceNumber": "100000345765859495480", body1:'body1',body2:'body2'}; 
 		var body = {body:bodi};		
+		//var expectedBody = {"referenceNumber": "1000xxxxxxxx5480","body1":"body1","body2":"body2"};
 		
 		apim.getvariable.and.callFake(function(variable) {			
 			if(variable == 'message.body') {
@@ -85,7 +88,7 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", payload:bodi };
+		var expected = {"x-global-transaction-id":"56955","logPointId":"Response","payload":bodi};
 		
 		api.logPayload(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));

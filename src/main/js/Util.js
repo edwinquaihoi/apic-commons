@@ -24,7 +24,12 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 		return null;
 	}
 	
-	return catalogConfig.getApiConfig(frameworkLocation, console);				
+	var apiConfig = catalogConfig.getApiConfig(frameworkLocation, console);		
+	
+	var transformer = require(configLocation + 'Transformations.js');
+	apiConfig.setTransformer(transformer);
+	
+	return apiConfig;
 };
 
 exports.getApiConfig = function(frameworkLocation, console, name, version, config, logLevel) {
