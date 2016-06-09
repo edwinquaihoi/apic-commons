@@ -79,11 +79,12 @@ Api.prototype.getErrorCodeObject = function(providerInput, codeInput) {
 	return code;
 }
 
-Api.prototype.logAuditData = function(apim) {
+Api.prototype.logAuditData = function(apim, logPointId) {
 	
 	// get the message headers
 	try {
-		var log = {};
+		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
+		var log = {"x-global-transaction-id":transactionid, logPointId:logPointId};
 		var audit = {};
 		audit.orgname = apim.getvariable('api.org.name');
 		audit.api = apim.getvariable('api.name');
@@ -100,16 +101,16 @@ Api.prototype.logAuditData = function(apim) {
 	}
 }
 
-Api.prototype.logMessageBody = function(apim, loggingTerminal) {
+Api.prototype.logPayload = function(apim, logPointId) {
 	
     var bodi = apim.getvariable('message.body');
-    this.logOutputBody(apim, bodi, loggingTerminal)
+    this.logOutputMessage(apim, bodi, logPointId)
 }
 
-Api.prototype.logException = function(apim, e, loggingTerminal) {
+Api.prototype.logException = function(apim, e, logPointId) {
 	try {
 		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
-		var exception = {"x-global-transaction-id":transactionid, loggingTerminal:loggingTerminal, exception:e.toString()};
+		var exception = {"x-global-transaction-id":transactionid, logPointId:logPointId, exception:e.toString()};
 		var str = JSON.stringify(exception);
 		var str = this.mask(str);
 		this.logger.error(str);
@@ -118,11 +119,11 @@ Api.prototype.logException = function(apim, e, loggingTerminal) {
 	}
 }
 
-Api.prototype.logOutputBody = function(apim, bodi, loggingTerminal) {
+Api.prototype.logOutputMessage = function(apim, bodi, logPointId) {
 
 	try {
 		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
-		var bodyPayload = {"x-global-transaction-id":transactionid, loggingTerminal:loggingTerminal, body:bodi};
+		var bodyPayload = {"x-global-transaction-id":transactionid, logPointId:logPointId, payload:bodi};
 		var str = JSON.stringify(bodyPayload);
 		var str = this.mask(str);
 		this.logger.debug(str);
@@ -181,7 +182,7 @@ Api.prototype.generateBusinessError = function(frameworkLocation, apim, provider
 }
 
 
-Api.prototype.logPayload = function(apim) {
+Api.prototype.getOperationMap = function(apim) {
 	return this.operationMap;
 }
 

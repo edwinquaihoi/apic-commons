@@ -58,17 +58,19 @@ describe("ApiTest",function() {
 		apim.getvariable.and.callFake(function(variable) {			
 			if(variable =='message.headers') { 				
 				return headers;
+			} else if(variable == 'message.headers.x-global-transaction-id') {
+				return "56955";
 			}
 			return null;
 		});
-		var expected = {"audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":headerz};
+		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", "audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":headerz};
 		
-		api.logAuditData(apim);
+		api.logAuditData(apim, 'Response');
 		expect(console.notice).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.headers');
 	});
 
-	it("testLogMessageBody", function() {
+	it("testLogPayload", function() {
 		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
 		
 		// mock object to simulate apim global variable
@@ -83,9 +85,9 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"x-global-transaction-id":"56955",  loggingTerminal:"Response", body:bodi };
+		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", payload:bodi };
 		
-		api.logMessageBody(apim, 'Response');
+		api.logPayload(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));
 		expect(apim.getvariable).toHaveBeenCalledWith('message.body');
 	});
@@ -108,7 +110,7 @@ describe("ApiTest",function() {
 		}
 		
 		//{"x-global-transaction-id":"56955","loggingTerminal":"Response","exception":"ReferenceError: \"ExceptinoCreatorFakeClass\" is not defined"}
-		var expected = {"x-global-transaction-id":"56955",  loggingTerminal:"Response", exception:e1 };
+		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", exception:e1 };
 		expect(console.error).toHaveBeenCalledWith(JSON.stringify(expected));
 	});
 });

@@ -22,6 +22,7 @@ describe("JsonTransformerTest", function() {
 		console.info.and.callFake(log);
 		console.notice.and.callFake(log);
 		console.debug.and.callFake(log);
+		console.error.and.callFake(log);
 	});
 
 	it("testTransform", function() {

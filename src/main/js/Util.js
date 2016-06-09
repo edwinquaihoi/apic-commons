@@ -48,7 +48,7 @@ exports.transformAndLog = function(transformer, transformMethodName, frameworkLo
 	var output = null;
 	if (transformer != null && transformMethod != null && typeof transformMethod === "function") {
 	    var output = transformMethod(frameworkLocation, apiConfig, apim);	
-	    apiConfig.logOutputBody(apim, output, transformMethodName);
+	    apiConfig.logOutputMessage(apim, output, transformMethodName);
 	    apim.setvariable('message.body', output);
 	}
 }
