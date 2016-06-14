@@ -12,9 +12,10 @@
  * 6 - info
  * 7 - debug 
  */
-function Logger(logLevel, console) {
-	this.logLevel = logLevel
-	this.console = console;
+function Logger(logCategory, logLevel, console) {
+	this.logLevel = logLevel;
+	this.logCategory = logCategory;
+	this.console = this.logCategory!= null? console.options({'category':this.logCategory}): console;
 	this.logPattern = "";
 }
 
@@ -75,6 +76,6 @@ Logger.prototype.emergency = function(msg) {
 /**
  * Integrates into require.js module system.
  */
-exports.newLogger = function(logLevel, console) {
-	return new Logger(logLevel, console);
+exports.newLogger = function(loggerConfig, console) {
+	return new Logger(loggerConfig.name, loggerConfig.logLevel, console);
 }

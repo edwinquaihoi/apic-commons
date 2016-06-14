@@ -25,22 +25,21 @@ exports.loadApiConfig = function(frameworkLocation,configLocation, catalog, name
 	}
 	
 	var apiConfig = catalogConfig.getApiConfig(frameworkLocation, console);		
-	
-	var transformer = require(configLocation + 'Transformations.js');
-	apiConfig.setTransformer(transformer);
+	apiConfig.setConfigLocation(configLocation);
 	
 	return apiConfig;
 };
 
-exports.getApiConfig = function(frameworkLocation, console, name, version, config, logLevel) {
+exports.getApiConfig = function(frameworkLocation, console, name, version, config, loggers) {
 
 	var logCreator = require(frameworkLocation + 'Logger.js');	
-	var logger = logCreator.newLogger(logLevel,console);	
+	var logger = logCreator.newLogger(loggers.generalLogger,console);	
+	var splunkLogger = logCreator.newLogger(loggers.splunkLogger,console);
 
 	console.debug('Logger:'+logger);
 	
 	var apiCreator = require(frameworkLocation + 'Api.js');
-	var api = apiCreator.newApi(frameworkLocation, name, version, config, logger);
+	var api = apiCreator.newApi(frameworkLocation, name, version, config, logger, splunkLogger);
 		
 	console.debug('Api:' + api);
 
@@ -51,6 +50,9 @@ exports.getApiConfig = function(frameworkLocation, console, name, version, confi
 exports.transformAndLog = function(transformer, transformMethodName, frameworkLocation, apiConfig, apim) {
 	var transformMethod = transformer[transformMethodName];
 	var output = null;
+	var httpCode = apim.getvariable('message.status.code');
+	if(httpCode != '200' && transformMethodName.includes('PostTransform'))
+		return;
 	if (transformer != null && transformMethod != null && typeof transformMethod === "function") {
 	    var output = transformMethod(frameworkLocation, apiConfig, apim);	
 	    apiConfig.logOutputMessage(apim, output, transformMethodName);

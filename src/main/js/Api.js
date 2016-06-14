@@ -6,14 +6,13 @@
  * @param operationMap a multi dimensional array containing operations that belong to the API.
  * @param logger a Logger object which is used by framework code to log.
  */	
-function Api(frameworkLocation, name, version, operationMap, logger) {
+function Api(frameworkLocation, name, version, operationMap, logger, splunkLogger) {
 	
 	this.name = name;
 	this.version = version;
 	this.operationMap = [];
 	this.logger = logger;
-	this.statusCodesMap = [];
-	this.providersMap = [];
+	this.splunkLogger = splunkLogger;
 	
 	var apiOperationCreator = require(frameworkLocation + "ApiOperation.js"); 
 
@@ -22,29 +21,16 @@ function Api(frameworkLocation, name, version, operationMap, logger) {
 		var op = apiOperationCreator.newApiOperation(frameworkLocation,this, operationMap[i].name, operationMap[i].methods);
 		this.operationMap[operationMap[i].name] = op;
 	}
-	
-	// loop through statusCodesArray and make and index map
-	var statusCodeAccessor = require(frameworkLocation + "StatusCode.js"); 
-	for (var i = 0; i < statusCodeAccessor.statusCodes.length; i++) {
-		var statusCodeObj = statusCodeAccessor.statusCodes[i];
-		this.statusCodesMap[statusCodeObj.statusCode] = statusCodeObj;
-	}	
-	// loop through providersArray and make and index map
-	for (var i = 0; i < statusCodeAccessor.maps.length; i++) {
-		var providerObj = statusCodeAccessor.maps[i];
-		providerObj.errorCodesMap = [];
-		if(providerObj.codes != null) {
-			for (var j = 0; j < providerObj.codes.length; j++) {
-				var errorCodeObj = providerObj.codes[j];
-				providerObj.errorCodesMap[errorCodeObj.code] = errorCodeObj;			
-			}
-		}			
-		this.providersMap[providerObj.provider] = providerObj;
-	}
 }	
 
-Api.prototype.setTransformer = function(transformer) {
-	this.transformer = transformer;
+Api.prototype.setConfigLocation = function(configLocation) {
+	this.configLocation = configLocation;
+	try {
+		this.transformer = require(configLocation + 'Transformations.js');
+		this.statusCodeAccessor = require(configLocation + "StatusCodes.js");
+	}catch(e) {
+		this.logger.error(e);
+	}
 }
 
 /**
@@ -64,25 +50,6 @@ Api.prototype.getOperationMap = function() {
 	return this.operationMap;
 }
 
-/**
- * Gets an statusCode by status code name.
- * @param name the name of the statusCode.
- * @returns a statusCode
- */
-Api.prototype.getStatusCodeObject = function(name) {
-	return this.statusCodesMap[name];
-}
-
-/**
- * Gets an errorCodeObject by provider and error code.
- * @returns error code mapping object with error code name and status code name.
- */
-Api.prototype.getErrorCodeObject = function(providerInput, codeInput) {
-	var provider = this.providersMap[providerInput];
-	var code = provider != null? provider.errorCodesMap[codeInput] : null;
-	return code;
-}
-
 Api.prototype.logAuditData = function(apim, logPointId) {
 	
 	// get the message headers
@@ -99,7 +66,7 @@ Api.prototype.logAuditData = function(apim, logPointId) {
 		audit.datetime = apim.getvariable('system.datetime');
 		log.audit = audit;
 		log.headers = apim.getvariable('message.headers').headers;
-		this.logger.notice(JSON.stringify(log));
+		this.splunkLogger.notice(JSON.stringify(log));
 	} catch(e) {
 		this.logger.error(e);
 	}
@@ -117,7 +84,7 @@ Api.prototype.logException = function(apim, e, logPointId) {
 		var exception = {"x-global-transaction-id":transactionid, logPointId:logPointId, exception:e.toString()};
 		var str = JSON.stringify(exception);
 		var str = this.mask(str);
-		this.logger.error(str);
+		this.splunkLogger.error(str);
 	} catch(ex) {
 		this.logger.error(ex);
 	}
@@ -130,7 +97,7 @@ Api.prototype.logOutputMessage = function(apim, bodi, logPointId) {
 		var bodyPayload = {"x-global-transaction-id":transactionid, logPointId:logPointId, payload:bodi};
 		var str = JSON.stringify(bodyPayload);
 		var str = this.mask(str);
-		this.logger.debug(str);
+		this.splunkLogger.debug(str);
 	} catch(e) {
 		this.logger.error(e);
 	}
@@ -161,6 +128,66 @@ Api.prototype.getByValue = function(arr, property, value) {
 }
 
 /**
+ * Gets an statusCode by status code name.
+ * @param name the name of the statusCode.
+ * @returns a statusCode
+ */
+Api.prototype.getStatusCodeObject = function(name) {
+	if(this.statusCodeAccessor == null || name == 'Unknown') {
+		// Return a default status code object in case there is no StatusCodes.js
+		var defaultCode = {
+				"httpCode" : "400",
+				"status" : {
+					"statusCode" : "Unknown",
+					"severity" : "Error",
+					"statusDesc" : "Internal Error"
+				}
+			};
+		return defaultCode;
+	}
+	if(this.statusCodesMap == null) {
+		this.statusCodesMap = [];
+		// loop through statusCodesArray and make and index map		
+		for (var i = 0; i < this.statusCodeAccessor.statusCodes.length; i++) {
+			var statusCodeObj = this.statusCodeAccessor.statusCodes[i];
+			this.statusCodesMap[statusCodeObj.status.statusCode] = statusCodeObj;
+		}	
+	}	
+	
+	return this.statusCodesMap[name];
+}
+
+/**
+ * Gets an errorCodeObject by provider and error code.
+ * @returns error code mapping object with error code name and status code name.
+ */
+Api.prototype.getErrorCodeObject = function(providerInput, codeInput) {
+	
+	if(this.statusCodeAccessor == null) 
+		return null;
+	
+	if(this.providersMap == null) {
+		this.providersMap = [];
+		// loop through providersArray and make and index map
+		for (var i = 0; i < this.statusCodeAccessor.maps.length; i++) {
+			var providerObj = this.statusCodeAccessor.maps[i];
+			providerObj.errorCodesMap = [];
+			if(providerObj.codes != null) {
+				for (var j = 0; j < providerObj.codes.length; j++) {
+					var errorCodeObj = providerObj.codes[j];
+					providerObj.errorCodesMap[errorCodeObj.code] = errorCodeObj;			
+				}
+			}			
+			this.providersMap[providerObj.provider] = providerObj;
+		}
+	}
+	
+	var provider = this.providersMap[providerInput];
+	var code = provider != null? provider.errorCodesMap[codeInput] : null;
+	return code;
+}
+
+/**
  * Map the business error to specific HTTP error and status code 
  * @param provider provider name
  * @param code error code from provider
@@ -178,7 +205,7 @@ Api.prototype.getErrorCode = function(frameworkLocation, providerInput, codeInpu
 Api.prototype.generateBusinessError = function(frameworkLocation, apim, provider, code) {
 	var statusCode = this.getErrorCode(frameworkLocation, provider, code);
 	apim.setvariable('message.status.code', statusCode.httpCode);
-	return statusCode;
+	return  {status: statusCode.status};
 }
 
 
@@ -190,6 +217,6 @@ Api.prototype.getOperationMap = function(apim) {
 /**
  * Integrates into require.js module system.
  */
-exports.newApi= function(frameworkLocation,name, version, operationMap, logger) {
-	return new Api(frameworkLocation,name, version, operationMap, logger);
+exports.newApi= function(frameworkLocation,name, version, operationMap, logger, splunkLogger) {
+	return new Api(frameworkLocation,name, version, operationMap, logger, splunkLogger);
 }

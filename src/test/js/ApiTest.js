@@ -9,6 +9,7 @@ describe("ApiTest",function() {
 	// spy object to replace console
 	var console;
 	var apim;
+	var logger;
 	var config = [
 	              {name:"/users",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users"}]},
 	              {name:"/users/all",methods:[{name:"GET", targetUrl:"https://randomuser.me/api/users/all"}]}
@@ -19,6 +20,10 @@ describe("ApiTest",function() {
 				[ 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' ]);
 		
 		apim = jasmine.createSpyObj('apim',['getvariable']);
+		
+		logger = require('Logger.js').newLogger({ 
+			logLevel: "7"
+		}, console);
 		
 		var log = function(msg) {
 			print(msg);
@@ -32,7 +37,7 @@ describe("ApiTest",function() {
 
 	it("testApi", function() {
 		
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, logger, logger);
 		
 		expect(api.version).toEqual("1.0.0");
 		expect(api.name).toEqual("api");
@@ -44,14 +49,14 @@ describe("ApiTest",function() {
 	});
 	
 	it("testApiLogger", function() {
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, logger, logger);
 
 		api.logger.error("Hello");
 		expect(console.error).toHaveBeenCalledWith("Hello");
 	});
 	
 	it("testLogAuditData", function() {
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, logger, logger);
 		
 		// mock object to simulate apim global variable
 		var headerz = {header1:'header1',header2:'header2'}; 
@@ -72,7 +77,7 @@ describe("ApiTest",function() {
 	});
 
 	it("testLogPayload", function() {
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, logger, logger);
 		//api.setTransformer(require(configLocation + 'Transformations.js'));
 		
 		// mock object to simulate apim global variable
@@ -96,7 +101,7 @@ describe("ApiTest",function() {
 	});
 	
 	it("testLogException", function() {
-		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, require('Logger.js').newLogger(7, console));
+		var api = require("Api.js").newApi(frameworkLocation,"api","1.0.0", config, logger, logger);
 		
 		apim.getvariable.and.callFake(function(variable) {			
 			if(variable == 'message.headers.x-global-transaction-id') {

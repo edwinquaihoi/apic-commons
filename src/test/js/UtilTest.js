@@ -15,6 +15,9 @@ describe("UtilTest",function() {
 		console.debug = function(msg) {
 			print(msg);
 		};
+		console.options = function(msg) {
+			return this;
+		};
 	});
 
 	it("testLoadConfig", function() {

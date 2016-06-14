@@ -13,7 +13,10 @@ describe("LoggerTest", function() {
 	});
 
 	it("testDebug", function() {
-		var logger = require('Logger.js').newLogger(7, console);
+
+		var logger = require('Logger.js').newLogger({ 
+				logLevel: "7"
+			}, console);
 		
 		logger.debug("Hello");
 		
@@ -25,7 +28,10 @@ describe("LoggerTest", function() {
 	});
 
 	it("testInfo", function() {
-		var logger = require('Logger.js').newLogger(6, console);
+
+		var logger = require('Logger.js').newLogger({ 
+				logLevel: "6"
+			}, console);
 		
 		logger.debug("Hello");
 		logger.info("Hello");
@@ -37,7 +43,10 @@ describe("LoggerTest", function() {
 	});
 
 	it("testNotice", function() {
-		var logger = require('Logger.js').newLogger(5, console);
+
+		var logger = require('Logger.js').newLogger({
+				logLevel: "5"
+			}, console);
 		
 		logger.debug("Hello");
 		logger.info("Hello");
