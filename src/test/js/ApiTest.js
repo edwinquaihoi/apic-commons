@@ -69,7 +69,10 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", "audit":{"orgname":null,"api":null,"apiversion":null,"requesturi":null,"clientappname":null,"clientid":null,"datetime":null},"headers":headerz};
+		var expected = {"transaction-id":"56955",
+				"logPointId":"Response",
+				"audit":{"apiName":null,"apiBasePath":null,"apiVersion":null,"apiOrg":null,"apiOrgId":null,"requestVerb":null,"requestUri":null,"gateway":null,"gatewayHostName":null,"plan":null,"clientApp":null,"clientAppId":null,"clientOrg":null,"clientOrgId":null,"datetime":null},
+				"headers":headerz};
 		
 		api.logAuditData(apim, 'Response');
 		expect(console.notice).toHaveBeenCalledWith(JSON.stringify(expected));
@@ -93,7 +96,7 @@ describe("ApiTest",function() {
 			}
 			return null;
 		});
-		var expected = {"x-global-transaction-id":"56955","logPointId":"Response","payload":bodi};
+		var expected = {"transaction-id":"56955","logPointId":"Response","payload":bodi};
 		
 		api.logPayload(apim, 'Response');
 		expect(console.debug).toHaveBeenCalledWith(JSON.stringify(expected));
@@ -118,7 +121,7 @@ describe("ApiTest",function() {
 		}
 		
 		//{"x-global-transaction-id":"56955","loggingTerminal":"Response","exception":"ReferenceError: \"ExceptinoCreatorFakeClass\" is not defined"}
-		var expected = {"x-global-transaction-id":"56955",  logPointId:"Response", exception:e1 };
+		var expected = {"transaction-id":"56955",  logPointId:"Response", exception:e1 };
 		expect(console.error).toHaveBeenCalledWith(JSON.stringify(expected));
 	});
 });

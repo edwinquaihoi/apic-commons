@@ -50,12 +50,20 @@ Api.prototype.getOperationMap = function() {
 	return this.operationMap;
 }
 
+Api.prototype.getTransactionId = function(apim) {
+	var transactionid = apim.getvariable('transaction-id');
+	if(transactionid == null) {
+		transactionid = apim.getvariable('message.headers.x-global-transaction-id');
+	}
+	return transactionid;
+}
+
 Api.prototype.logAuditData = function(apim, logPointId) {
 	
 	// get the message headers
 	try {
-		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
-		var log = {"x-global-transaction-id":transactionid, logPointId:logPointId};
+		var transactionid = this.getTransactionId(apim);
+		var log = {"transaction-id":transactionid, logPointId:logPointId};
 		var audit = {};
 		audit.apiName = apim.getvariable('api.name');
 		audit.apiBasePath = apim.getvariable('api.root');
@@ -88,8 +96,8 @@ Api.prototype.logPayload = function(apim, logPointId) {
 
 Api.prototype.logException = function(apim, e, logPointId) {
 	try {
-		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
-		var exception = {"x-global-transaction-id":transactionid, logPointId:logPointId, exception:e.toString()};
+		var transactionid = this.getTransactionId(apim);
+		var exception = {"transaction-id":transactionid, logPointId:logPointId, exception:e.toString()};
 		var str = JSON.stringify(exception);
 		var str = this.mask(str);
 		this.splunkLogger.error(str);
@@ -101,8 +109,8 @@ Api.prototype.logException = function(apim, e, logPointId) {
 Api.prototype.logOutputMessage = function(apim, bodi, logPointId) {
 
 	try {
-		var transactionid = apim.getvariable('message.headers.x-global-transaction-id');
-		var bodyPayload = {"x-global-transaction-id":transactionid, logPointId:logPointId, payload:bodi};
+		var transactionid = this.getTransactionId(apim);
+		var bodyPayload = {"transaction-id":transactionid, logPointId:logPointId, payload:bodi};
 		var str = JSON.stringify(bodyPayload);
 		var str = this.mask(str);
 		this.splunkLogger.debug(str);
